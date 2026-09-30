@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Learning Hub - Luyện Tiếng Anh Comprehensive</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Navigation */
+        sidebar {
+            width: 260px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem 1rem;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: #eef2ff;
+            color: var(--primary);
+        }
+
+        /* Main Content Area */
+        main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .section {
+            display: none;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        h2 {
+            margin-bottom: 1.5rem;
+            font-size: 1.75rem;
+        }
+
+        /* Selector Controls */
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        select, button, textarea {
+            padding: 0.6rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        select {
+            background: var(--surface);
+            cursor: pointer;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Flashcard Styles */
+        .flashcard-container {
+            perspective: 1000px;
+            width: 100%;
+            height: 280px;
+            margin-bottom: 1.5rem;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background: var(--surface);
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            background: #fafafa;
+        }
+
+        .word-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .word-phonetic {
+            color: var(--text-muted);
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+
+        .word-meaning {
+            font-size: 1.5rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .word-example {
+            margin-top: 1rem;
+            color: var(--text-muted);
+        }
+
+        /* Quiz & Review */
+        .quiz-card {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .option-btn {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+            text-align: left;
+            padding: 1rem;
+        }
+
+        .option-btn:hover {
+            background: #f1f5f9;
+        }
+
+        .option-btn.correct {
+            background: #d1fae5;
+            border-color: var(--success);
+            color: #065f46;
+        }
+
+        .option-btn.wrong {
+            background: #fee2e2;
+            border-color: var(--danger);
+            color: #991b1b;
+        }
+
+        /* Writing Section */
+        textarea {
+            width: 100%;
+            height: 180px;
+            resize: vertical;
+            margin-bottom: 1rem;
+        }
+
+        .feedback-box {
+            background: #eef2ff;
+            border: 1px solid #c7d2fe;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: none;
+        }
+
+        /* Grammar Accordion */
+        .grammar-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .grammar-header {
+            padding: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: #f1f5f9;
+        }
+
+        .grammar-body {
+            padding: 1rem;
+            display: none;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+    <sidebar>
+        <div class="logo">📚 English Hub</div>
+        <ul class="nav-list">
+            <li class="nav-item active" onclick="showSection('flashcards')">🎴 Flashcards</li>
+            <li class="nav-item" onclick="showSection('quiz')">✍️ Ôn tập (Quiz)</li>
+            <li class="nav-item" onclick="showSection('listening')">🎧 Luyện Nghe</li>
+            <li class="nav-item" onclick="showSection('grammar')">📖 Ngữ Pháp B1-B2</li>
+            <li class="nav-item" onclick="showSection('writing')">📝 Luyện Viết</li>
+        </ul>
+    </sidebar>
+
+    <main>
+        <!-- FLASHCARDS -->
+        <section id="flashcards" class="section active">
+            <h2>Học Từ Vựng (Flashcards)</h2>
+            <div class="controls">
+                <select id="topicSelect" onchange="loadTopic(this.value)"></select>
+                <button onclick="speakCurrentWord()">🔊 Phát âm</button>
+            </div>
+
+            <div class="flashcard-container">
+                <div class="flashcard" id="card" onclick="flipCard()">
+                    <div class="card-face card-front">
+                        <div class="word-title" id="cardWord">Word</div>
+                        <div class="word-phonetic" id="cardPhonetic">/phonetic/</div>
+                        <small style="color: var(--text-muted)">Nhấp để lật mặt sau</small>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="word-meaning" id="cardMeaning">Nghĩa của từ</div>
+                        <div class="word-example" id="cardExample">Ví dụ...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls" style="justify-content: center;">
+                <button onclick="prevWord()">Quay lại</button>
+                <span id="cardProgress" style="align-self: center; font-weight: 600;">1 / 100</span>
+                <button onclick="nextWord()">Tiếp theo</button>
+            </div>
+        </section>
+
+        <!-- QUIZ -->
+        <section id="quiz" class="section">
+            <h2>Trắc Nghiệm Ôn Tập</h2>
+            <div class="quiz-card">
+                <h3 id="quizQuestion">Câu hỏi sẽ hiển thị ở đây?</h3>
+                <div class="options-grid" id="quizOptions"></div>
+            </div>
+            <div style="margin-top: 1rem; text-align: right;">
+                <button onclick="generateQuiz()">Câu tiếp theo ➔</button>
+            </div>
+        </section>
+
+        <!-- LISTENING -->
+        <section id="listening" class="section">
+            <h2>Luyện Nghe Điền Từ</h2>
+            <div class="quiz-card">
+                <p>Bấm nút bên dưới để nghe câu, sau đó điền từ còn thiếu vào ô trống:</p>
+                <button onclick="playListeningAudio()" style="margin: 1rem 0;">🔊 Nghe câu hỏi</button>
+                <div id="listeningSentence" style="font-size: 1.2rem; margin-bottom: 1rem;"></div>
+                <div class="controls">
+                    <input type="text" id="listeningAnswer" placeholder="Nhập từ bạn nghe được..." style="flex: 1; padding: 0.6rem;">
+                    <button onclick="checkListeningAnswer()">Kiểm tra</button>
+                </div>
+                <div id="listeningResult" style="margin-top: 1rem; font-weight: bold;"></div>
+            </div>
+        </section>
+
+        <!-- GRAMMAR -->
+        <section id="grammar" class="section">
+            <h2>Ngữ Pháp Trọng Tâm B1 - B2</h2>
+            <div id="grammarList"></div>
+        </section>
+
+        <!-- WRITING -->
+        <section id="writing" class="section">
+            <h2>Luyện Viết Theo Chủ Đề</h2>
+            <div class="quiz-card">
+                <h3 id="writingPrompt">Đề bài: Hãy viết một đoạn văn ngắn (50-100 từ) về chủ đề công việc yêu thích của bạn.</h3>
+                <textarea id="writingInput" placeholder="Nhập đoạn văn tiếng Anh của bạn tại đây..."></textarea>
+                <button onclick="analyzeWriting()">Gửi & Phân tích lỗi</button>
+                <div class="feedback-box" id="writingFeedback"></div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // --- 1. DỮ LIỆU CHỦ ĐỀ & TỪ VỰNG (Mẫu khởi tạo 50 chủ đề) ---
+        const topics = Array.from({ length: 50 }, (_, i) => `Chủ đề ${i + 1}: ${
+            ['Công sở', 'Du lịch', 'Công nghệ', 'Y tế', 'Môi trường', 'Giáo dục', 'Ẩm thực', 'Thể thao', 'Nghệ thuật', 'Kinh tế'][i % 10]
+        } ${Math.floor(i / 10) + 1}`);
+
+        // Khởi tạo 100 từ vựng cho mỗi chủ đề (Dữ liệu mẫu)
+        const vocabularyData = {};
+        topics.forEach((topic, index) => {
+            vocabularyData[topic] = Array.from({ length: 100 }, (_, wIndex) => ({
+                word: `Vocabulary_${index + 1}_${wIndex + 1}`,
+                phonetic: `/vəˈkæbjələri/`,
+                meaning: `Nghĩa của từ ${wIndex + 1} (Chủ đề ${index + 1})`,
+                example: `This is an example sentence using Vocabulary_${index + 1}_${wIndex + 1}.`
+            }));
+        });
+
+        // Đổi một số từ tiêu biểu mẫu cho sinh động
+        vocabularyData[topics[0]][0] = { word: "Collaborate", phonetic: "/kəˈlæb.ə.reɪt/", meaning: "Hợp tác", example: "We need to collaborate on this new project." };
+        vocabularyData[topics[0]][1] = { word: "Deadline", phonetic: "/ˈded.laɪn/", meaning: "Hạn chót", example: "Can we meet the deadline by Friday?" };
+
+        // --- 2. DỮ LIỆU NGỮ PHÁP B1-B2 ---
+        const grammarData = [
+            { title: "1. Present Perfect vs. Past Simple ( B1 )", content: "<b>Thì Hiện tại Hoàn thành:</b> Dùng cho hành động xảy ra trong quá khứ kéo dài đến hiện tại hoặc không rõ thời gian.<br><i>Ví dụ: I have lived here for 5 years.</i><br><br><b>Thì Quá khứ Đơn:</b> Dùng cho hành động đã kết thúc hẳn trong quá khứ có thời gian xác định.<br><i>Ví dụ: I lived in London in 2018.</i>" },
+            { title: "2. First and Second Conditionals ( B1 )", content: "<b>Điều kiện loại 1 (Có thật ở hiện tại/tương lai):</b> If + S + V(pres), S + will + V.<br><b>Điều kiện loại 2 (Giả định không thật ở hiện tại):</b> If + S + V(past), S + would + V." },
+            { title: "3. Passive Voice ( B1-B2 )", content: "<b>Thể bị động:</b> S + Be + V3/ed.<br>Sử dụng khi muốn nhấn mạnh vào hành động hoặc đối tượng chịu tác động thay vì người thực hiện." },
+            { title: "4. Relative Clauses - Mệnh đề quan hệ ( B2 )", content: "Sử dụng <b>Who, Whom, Which, That, Whose</b> để nối câu.<br>- Mệnh đề quan hệ xác định (Defining) vs Không xác định (Non-defining)." },
+            { title: "5. Reported Speech - Câu tường thuật ( B2 )", content: "Lùi thì của động từ, thay đổi đại từ và từ chỉ thời gian/địa điểm khi tường thuật lại lời nói của người khác." }
+        ];
+
+        // --- 3. QUẢN LÝ TRẠNG THÁI (STATE) ---
+        let currentTopic = topics[0];
+        let currentIndex = 0;
+        let currentListeningWord = "";
+
+        // UI Routing
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            event.target.classList.add('active');
+
+            if (id === 'quiz') generateQuiz();
+            if (id === 'listening') setupListening();
+        }
+
+        // --- 4. LOGIC FLASHCARD ---
+        function initTopics() {
+            const select = document.getElementById('topicSelect');
+            select.innerHTML = '';
+            topics.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t;
+                opt.innerText = t;
+                select.appendChild(opt);
+            });
+            loadTopic(topics[0]);
+        }
+
+        function loadTopic(topicName) {
+            currentTopic = topicName;
+            currentIndex = 0;
+            updateCardUI();
+        }
+
+        function updateCardUI() {
+            const list = vocabularyData[currentTopic];
+            const data = list[currentIndex];
+            
+            document.getElementById('cardWord').innerText = data.word;
+            document.getElementById('cardPhonetic').innerText = data.phonetic;
+            document.getElementById('cardMeaning').innerText = data.meaning;
+            document.getElementById('cardExample').innerText = data.example;
+            document.getElementById('cardProgress').innerText = `${currentIndex + 1} / ${list.length}`;
+            
+            document.getElementById('card').classList.remove('flipped');
+        }
+
+        function flipCard() {
+            document.getElementById('card').classList.toggle('flipped');
+        }
+
+        function nextWord() {
+            if (currentIndex < vocabularyData[currentTopic].length - 1) {
+                currentIndex++;
+                updateCardUI();
+            }
+        }
+
+        function prevWord() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateCardUI();
+            }
+        }
+
+        function speakCurrentWord() {
+            const word = vocabularyData[currentTopic][currentIndex].word;
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = 'en-US';
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // --- 5. LOGIC QUIZ ---
+        function generateQuiz() {
+            const list = vocabularyData[currentTopic];
+            const correctItem = list[Math.floor(Math.random() * list.length)];
+            
+            document.getElementById('quizQuestion').innerText = `Từ nào có nghĩa là: "${correctItem.meaning}"?`;
+            
+            // Tạo 4 lựa chọn
+            let options = [correctItem.word];
+            while(options.length < 4) {
+                let randomWord = list[Math.floor(Math.random() * list.length)].word;
+                if (!options.includes(randomWord)) options.push(randomWord);
+            }
+            options.sort(() => Math.random() - 0.5);
+
+            const optionsContainer = document.getElementById('quizOptions');
+            optionsContainer.innerHTML = '';
+            
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => {
+                    if (opt === correctItem.word) {
+                        btn.classList.add('correct');
+                    } else {
+                        btn.classList.add('wrong');
+                    }
+                };
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        // --- 6. LOGIC LUYỆN NGHE ---
+        function setupListening() {
+            const list = vocabularyData[currentTopic];
+            const item = list[Math.floor(Math.random() * list.length)];
+            currentListeningWord = item.word;
+            
+            // Mẫu câu ẩn từ
+            const sentenceDisplay = item.example.replace(new RegExp(item.word, 'gi'), '_______');
+            document.getElementById('listeningSentence').innerText = sentenceDisplay;
+            document.getElementById('listeningAnswer').value = '';
+            document.getElementById('listeningResult').innerText = '';
+        }
+
+        function playListeningAudio() {
+            const utterance = new SpeechSynthesisUtterance(currentListeningWord);
+            utterance.lang = 'en-US';
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function checkListeningAnswer() {
+            const userAns = document.getElementById('listeningAnswer').value.trim();
+            const res = document.getElementById('listeningResult');
+            
+            if (userAns.toLowerCase() === currentListeningWord.toLowerCase()) {
+                res.innerText = "Chính xác! 🎉";
+                res.style.color = "var(--success)";
+            } else {
+                res.innerText = `Chưa đúng. Đáp án là: ${currentListeningWord}`;
+                res.style.color = "var(--danger)";
+            }
+        }
+
+        // --- 7. LOGIC NGỮ PHÁP ---
+        function renderGrammar() {
+            const container = document.getElementById('grammarList');
+            container.innerHTML = '';
+            
+            grammarData.forEach((item, index) => {
+                const el = document.createElement('div');
+                el.className = 'grammar-item';
+                el.innerHTML = `
+                    <div class="grammar-header" onclick="toggleGrammar(${index})">${item.title}</div>
+                    <div class="grammar-body" id="grammar-body-${index}">${item.content}</div>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        function toggleGrammar(index) {
+            const body = document.getElementById(`grammar-body-${index}`);
+            body.style.display = body.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // --- 8. LOGIC WRITING (Giả lập feedback) ---
+        function analyzeWriting() {
+            const text = document.getElementById('writingInput').value;
+            const feedbackBox = document.getElementById('writingFeedback');
+            
+            if (text.trim().length < 10) {
+                feedbackBox.style.display = 'block';
+                feedbackBox.innerHTML = '<span style="color:var(--danger)">Vui lòng viết đoạn văn dài hơn để nhận đánh giá.</span>';
+                return;
+            }
+
+            const wordCount = text.trim().split(/\s+/).length;
+            feedbackBox.style.display = 'block';
+            feedbackBox.innerHTML = `
+                <h4>Nhận xét bài viết:</h4>
+                <p>• <b>Số từ:</b> ${wordCount} từ.</p>
+                <p>• <b>Đánh giá chung:</b> Đã đáp ứng chủ đề. Ngữ pháp khá tốt.</p>
+                <p>• <b>Gợi ý nâng cao B2:</b> Hãy thử sử dụng thêm các từ nối như <i>Furthermore, However, Consequently</i> để tăng tính liên kết.</p>
+            `;
+        }
+
+        // Khởi chạy ban đầu
+        window.onload = () => {
+            initTopics();
+            renderGrammar();
+        };
+    </script>
+</body>
+</html>
